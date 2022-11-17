@@ -1,5 +1,5 @@
-<div class="example-container mat-elevation-z0">
-  <table
+<div class="example-container mat-elevation-z0" (scroll)="onScroll($event)">
+  <table 
     mat-table
     [dataSource]="dataSource"
     multiTemplateDataRows
@@ -55,7 +55,7 @@
       *matRowDef="let element; columns: displayedColumns;"
       class="example-element-row"
       [class.example-expanded-row]="expandedElement === element"
-      (click)="expandeElment(element)"
+      (click)="expandeElment(element, $event.target)"
     ></tr>
     <tr
       mat-row

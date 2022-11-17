@@ -108,6 +108,8 @@ export class TableSortingExample implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   expandedElement: PeriodicElement | null;
   dataSource: MatTableDataSource<PeriodicElement>;
+  expandedElem: any;
+  
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -119,6 +121,9 @@ export class TableSortingExample implements OnInit {
     console.log(this.dataSource);
   }
 
+  onScroll(event){
+    console.log(this.getElementViewportInfo(this.expandedElem))
+  }
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -126,54 +131,13 @@ export class TableSortingExample implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
-  expandeElment(element){
-    this.expandedElement = element;
-    this.getElementViewportInfo(element)
+  expandeElment(data, element){
+    this.expandedElement = data;
+    this.expandedElem = element;
+    console.log(this.getElementViewportInfo(this.expandedElem))
   }
    getElementViewportInfo(el) {
-
-    let result = {};
-
-    let rect = el.getBoundingClientRect();
-    let windowHeight = window.innerHeight || document.documentElement.clientHeight;
-    let windowWidth  = window.innerWidth || document.documentElement.clientWidth;
-
-    let insideX = rect.left >= 0 && rect.left + rect.width <= windowWidth;
-    let insideY = rect.top >= 0 && rect.top + rect.height <= windowHeight;
-
-    result['isInsideViewport'] = insideX && insideY;
-
-    let aroundX = rect.left < 0 && rect.left + rect.width > windowWidth;
-    let aroundY = rect.top < 0 && rect.top + rect.height > windowHeight;
-
-    result['isAroundViewport'] = aroundX && aroundY;
-
-    let onTop    = rect.top < 0 && rect.top + rect.height > 0;
-    let onRight  = rect.left < windowWidth && rect.left + rect.width > windowWidth;
-    let onLeft   = rect.left < 0 && rect.left + rect.width > 0;
-    let onBottom = rect.top < windowHeight && rect.top + rect.height > windowHeight;
-
-    let onY = insideY || aroundY || onTop || onBottom;
-    let onX = insideX || aroundX || onLeft || onRight;
-
-    result['isOnTopEdge']    = onTop && onX;
-    result['isOnRightEdge']  = onRight && onY;
-    result['isOnBottomEdge'] = onBottom && onX;
-    result['isOnLeftEdge']   = onLeft && onY;
-
-    result['isOnEdge'] = result['isOnLeftEdge'] || result['isOnRightEdge'] ||
-        result['isOnTopEdge'] || result['isOnBottomEdge'];
-
-    let isInX =
-        insideX || aroundX || result['isOnLeftEdge'] || result['isOnRightEdge'];
-    let isInY =
-        insideY || aroundY || result['isOnTopEdge'] || result['isOnBottomEdge'];
-
-    result['isInViewport'] = isInX && isInY;
-
-    result['isPartiallyInViewport'] =
-        result['isInViewport'] && result['isOnEdge'];
-
-    return result;
-}
+    const box = el.getBoundingClientRect();
+    return box.top < window.innerHeight && box.bottom >= 0;
+  }
 }
